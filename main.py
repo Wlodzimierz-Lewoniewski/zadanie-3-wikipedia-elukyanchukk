@@ -2,7 +2,7 @@ import urllib.parse
 import urllib.request
 import re
 
-category=input("Wpisz nazwę kategorii: ")
+category=input()
 
 category=category.strip()
 url = urllib.request.urlopen("https://pl.wikipedia.org/wiki/Kategoria:" + category.replace(" ", "_"))
