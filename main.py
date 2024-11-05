@@ -2,24 +2,19 @@ import urllib.parse
 import urllib.request
 import re
 
-# Miasta na prawach powiatu
 category=input("Wpisz nazwę kategorii: ")
 
 category=category.strip()
 url = urllib.request.urlopen("https://pl.wikipedia.org/wiki/Kategoria:" + category.replace(" ", "_"))
-print("URL: ", "https://pl.wikipedia.org/wiki/Kategoria:" + category.replace(" ", "_"))
+# print("URL: ", "https://pl.wikipedia.org/wiki/Kategoria:" + category.replace(" ", "_"))
 mybytes = url.read()
 
 html_content = mybytes.decode("utf8")
 url.close()
 
-# pattern = r'(.*?)<\/li>'
 pattern = r'<li><a\s+href="\/wiki\/[^"]+"\s+title="[^"]+">[^<]+<\/a>'
 
 matches = re.findall(pattern, html_content)
-
-# print("HTML content: ", html_content)
-# print("Matches: ", matches)
 
 # Get the first two matches
 art1 = matches[0]
@@ -43,11 +38,6 @@ html_content_art2 = bytes_art2.decode("utf8")
 art1_urlopen.close()
 art2_urlopen.close()
 
-print ('Ten wyraz został wprowadzony:', category)
-
-print("DWA ARTYKUŁY: ", url_art1, url_art2)
-
-# print("HTML 1: ", html_content_art1[40000:80000])
 # Linki wewnętrzne - art1
 
 internal_links_1 = []
@@ -61,7 +51,7 @@ for link in re.findall(r'href="(\/wiki\/[^":#]*)"', html_content_art1):
     if len(internal_links_1) >= 5: 
         break
 
-print(internal_links_1)
+print(" | ".join(internal_links_1))
 
 # Asresy URL do obrazków - art1
 
@@ -73,7 +63,7 @@ for link in re.findall(r"src=[\"']?(//[^\"'\s]+?\.(?:jpg|png))[\"']?", html_cont
     if len(images_1) >= 3: 
         break
 
-print(images_1)
+print(" | ".join(images_1))
 
 # Linki zewnętrzne - art 1
 
@@ -89,7 +79,7 @@ for link in re.findall(r'href="(http[s]?://[^"]+)"', html_references):
     if len(external_links_1) >= 3: 
         break
 
-print(external_links_1)
+print(" | ".join(external_links_1))
 
 # Kategorie - art 1
 
@@ -97,15 +87,15 @@ categories_html = re.search(r'<div id="catlinks" class="catlinks" data-mw="inter
 start, end = categories_html.span()
 html_references = html_content_art1[start:end]
 
-categories = []
+categories_1 = []
 
 for link in re.findall(r'title="Kategoria:([^"]+)"', html_references): 
-    categories.append(urllib.parse.unquote(link))
+    categories_1.append(urllib.parse.unquote(link))
 
-    if len(categories) >= 3: 
+    if len(categories_1) >= 3: 
         break
 
-print(categories)
+print(" | ".join(categories_1))
 
 # Linki wewnętrzne - art2
 
@@ -120,7 +110,7 @@ for link in re.findall(r'href="(\/wiki\/[^":#]*)"', html_content_art2):
     if len(internal_links_2) >= 5: 
         break
 
-print(internal_links_2)
+print(" | ".join(internal_links_2))
 
 # Adresy URL do obrazków - art2
 
@@ -132,7 +122,7 @@ for link in re.findall(r"src=[\"']?(//[^\"'\s]+?\.(?:jpg|png))[\"']?", html_cont
     if len(images_2) >= 3: 
         break
 
-print(images_2)
+print(" | ".join(images_2))
 
 # Linki zewnętrzne - art 2
 
@@ -148,7 +138,7 @@ for link in re.findall(r'href="(http[s]?://[^"]+)"', html_references):
     if len(external_links_2) >= 3: 
         break
 
-print(external_links_2)
+print(" | ".join(external_links_2))
 
 # Kategorie - art 2
 
@@ -156,12 +146,12 @@ categories_html = re.search(r'<div id="catlinks" class="catlinks" data-mw="inter
 start, end = categories_html.span()
 html_references = html_content_art2[start:end]
 
-categories = []
+categories_2 = []
 
 for link in re.findall(r'title="Kategoria:([^"]+)"', html_references): 
-    categories.append(urllib.parse.unquote(link))
+    categories_2.append(urllib.parse.unquote(link))
 
-    if len(categories) >= 3: 
+    if len(categories_2) >= 3: 
         break
 
-print(categories)
+print(" | ".join(categories_2))
