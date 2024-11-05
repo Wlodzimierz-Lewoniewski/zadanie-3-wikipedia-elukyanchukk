@@ -1,9 +1,167 @@
-#Przykład otrzymania wartości wprowadzonej przy użyciu funkcji input().
-wyraz=input()
+import urllib.parse
+import urllib.request
+import re
 
-#W celu poprawnego działania kodu w ramach GitHub Classroom warto dodatkowo użyć funkcję strip()
-#To pozwoli na usunięcie spacji oraz innych "spacjopodobnych" znaków (tabulacja \t', przejście do nowej linii '\n' lub '\r' etc.) z "głowy" i "ogona" (lewej i prawej części wyrazu).
-wyraz=wyraz.strip()
+# Miasta na prawach powiatu
+category=input("Wpisz nazwę kategorii: ")
 
-#Wydruk na ekranie (w konsoli)
-print ('Ten wyraz został wprowadzony:', wyraz)
+category=category.strip()
+url = urllib.request.urlopen("https://pl.wikipedia.org/wiki/Kategoria:" + category.replace(" ", "_"))
+print("URL: ", "https://pl.wikipedia.org/wiki/Kategoria:" + category.replace(" ", "_"))
+mybytes = url.read()
+
+html_content = mybytes.decode("utf8")
+url.close()
+
+# pattern = r'(.*?)<\/li>'
+pattern = r'<li><a\s+href="\/wiki\/[^"]+"\s+title="[^"]+">[^<]+<\/a>'
+
+matches = re.findall(pattern, html_content)
+
+# print("HTML content: ", html_content)
+# print("Matches: ", matches)
+
+# Get the first two matches
+art1 = matches[0]
+art2 = matches[1]
+
+pattern_url = r'href="(.*?)"'
+
+
+url_art1 = "https://pl.wikipedia.org/" + re.findall(pattern_url, art1)[0]
+url_art2 = "https://pl.wikipedia.org/" + re.findall(pattern_url, art2)[0]
+
+art1_urlopen = urllib.request.urlopen(url_art1)
+art2_urlopen = urllib.request.urlopen(url_art2)
+
+bytes_art1 = art1_urlopen.read()
+bytes_art2 = art2_urlopen.read()
+
+html_content_art1 = bytes_art1.decode("utf8")
+html_content_art2 = bytes_art2.decode("utf8")
+
+art1_urlopen.close()
+art2_urlopen.close()
+
+print ('Ten wyraz został wprowadzony:', category)
+
+print("DWA ARTYKUŁY: ", url_art1, url_art2)
+
+# print("HTML 1: ", html_content_art1[40000:80000])
+# Linki wewnętrzne - art1
+
+internal_links_1 = []
+
+for link in re.findall(r'href="(\/wiki\/[^":#]*)"', html_content_art1):
+    if (":" in link) or ("https://pl.wikipedia.org/"+link == url_art1) or (link == '/wiki/Ziemia'): 
+        continue
+
+    internal_links_1.append(urllib.parse.unquote(link).replace("_", " ").replace("/wiki/", ''))
+
+    if len(internal_links_1) >= 5: 
+        break
+
+print(internal_links_1)
+
+# Asresy URL do obrazków - art1
+
+images_1 = []
+
+for link in re.findall(r"src=[\"']?(//[^\"'\s]+?\.(?:jpg|png))[\"']?", html_content_art1):
+    images_1.append(urllib.parse.unquote(link))
+
+    if len(images_1) >= 3: 
+        break
+
+print(images_1)
+
+# Linki zewnętrzne - art 1
+
+external_links_html = re.search(r'<div class="mw-references-wrap mw-references-columns">.*?</div>', html_content_art1, re.DOTALL)
+start, end = external_links_html.span()
+html_references = html_content_art1[start:end]
+
+external_links_1 = []
+
+for link in re.findall(r'href="(http[s]?://[^"]+)"', html_references): 
+    external_links_1.append(urllib.parse.unquote(link))
+
+    if len(external_links_1) >= 3: 
+        break
+
+print(external_links_1)
+
+# Kategorie - art 1
+
+categories_html = re.search(r'<div id="catlinks" class="catlinks" data-mw="interface"><div id="mw-normal-catlinks" class="mw-normal-catlinks">.*?</div></div>', html_content_art1, re.DOTALL)
+start, end = categories_html.span()
+html_references = html_content_art1[start:end]
+
+categories = []
+
+for link in re.findall(r'title="Kategoria:([^"]+)"', html_references): 
+    categories.append(urllib.parse.unquote(link))
+
+    if len(categories) >= 3: 
+        break
+
+print(categories)
+
+# Linki wewnętrzne - art2
+
+internal_links_2 = []
+
+for link in re.findall(r'href="(\/wiki\/[^":#]*)"', html_content_art2):
+    if (":" in link) or ("https://pl.wikipedia.org/"+link == url_art2) or (link == '/wiki/Ziemia'): 
+        continue
+
+    internal_links_2.append(urllib.parse.unquote(link).replace("_", " ").replace("/wiki/", ''))
+
+    if len(internal_links_2) >= 5: 
+        break
+
+print(internal_links_2)
+
+# Adresy URL do obrazków - art2
+
+images_2 = []
+
+for link in re.findall(r"src=[\"']?(//[^\"'\s]+?\.(?:jpg|png))[\"']?", html_content_art2):
+    images_2.append(urllib.parse.unquote(link))
+
+    if len(images_2) >= 3: 
+        break
+
+print(images_2)
+
+# Linki zewnętrzne - art 2
+
+external_links_html = re.search(r'<div class="mw-references-wrap mw-references-columns">.*?</div>', html_content_art2, re.DOTALL)
+start, end = external_links_html.span()
+html_references = html_content_art2[start:end]
+
+external_links_2 = []
+
+for link in re.findall(r'href="(http[s]?://[^"]+)"', html_references): 
+    external_links_2.append(urllib.parse.unquote(link))
+
+    if len(external_links_2) >= 3: 
+        break
+
+print(external_links_2)
+
+# Kategorie - art 2
+
+categories_html = re.search(r'<div id="catlinks" class="catlinks" data-mw="interface"><div id="mw-normal-catlinks" class="mw-normal-catlinks">.*?</div></div>', html_content_art2, re.DOTALL)
+start, end = categories_html.span()
+html_references = html_content_art2[start:end]
+
+categories = []
+
+for link in re.findall(r'title="Kategoria:([^"]+)"', html_references): 
+    categories.append(urllib.parse.unquote(link))
+
+    if len(categories) >= 3: 
+        break
+
+print(categories)
