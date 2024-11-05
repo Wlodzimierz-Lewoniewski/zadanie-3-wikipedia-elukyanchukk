@@ -58,6 +58,9 @@ print(" | ".join(internal_links_1))
 images_1 = []
 
 for link in re.findall(r"src=[\"']?(//[^\"'\s]+?\.(?:jpg|png))[\"']?", html_content_art1):
+    if link == '//upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Geographylogo.svg/20px-Geographylogo.svg.png':
+        continue
+
     images_1.append(urllib.parse.unquote(link))
 
     if len(images_1) >= 3: 
@@ -117,6 +120,9 @@ print(" | ".join(internal_links_2))
 images_2 = []
 
 for link in re.findall(r"src=[\"']?(//[^\"'\s]+?\.(?:jpg|png))[\"']?", html_content_art2):
+    if link == '//upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Geographylogo.svg/20px-Geographylogo.svg.png':
+        continue
+
     images_2.append(urllib.parse.unquote(link))
 
     if len(images_2) >= 3: 
