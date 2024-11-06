@@ -6,8 +6,10 @@ import re
 category=input()
 
 category=category.strip()
-url = urllib.request.urlopen("https://pl.wikipedia.org/wiki/Kategoria:" + category.replace(" ", "_"))
-print("URL: ", "https://pl.wikipedia.org/wiki/Kategoria:" + category.replace(" ", "_"))
+category = category.strip()
+encoded_category = urllib.parse.quote(category.replace(" ", "_"))
+url = urllib.request.urlopen("https://pl.wikipedia.org/wiki/Kategoria:" + encoded_category)
+print("URL:", "https://pl.wikipedia.org/wiki/Kategoria:" + encoded_category)
 mybytes = url.read()
 
 html_content = mybytes.decode("utf8")
